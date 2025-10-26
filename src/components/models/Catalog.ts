@@ -1,30 +1,33 @@
 import { IProduct } from '../../types';
 
 export class Catalog {
+  // Массив всех товаров
   private _products: IProduct[] = [];
+
+  // Товар, выбранный для подробного отображения
   private _selectedProduct: IProduct | null = null;
 
-  // Установить весь список товаров
-  setProducts(products: IProduct[]): void {
+  // Сохранение массива товаров
+  setProductsList(products: IProduct[]): void {
     this._products = products;
   }
 
-  // Получить все товары
+  // Получение списка всех товаров
   getProducts(): IProduct[] {
     return this._products;
   }
 
-  // Найти товар по ID
+  // Получение одного товара по ID
   getProductById(id: string): IProduct | undefined {
-    return this._products.find((p) => p.id === id);
+    return this._products.find((product) => product.id === id);
   }
 
-  // Установить выбранный товар
-  setSelectedProduct(product: IProduct | null): void {
+  // Сохранение товара для подробного отображения
+  setSelectedProduct(product: IProduct): void {
     this._selectedProduct = product;
   }
 
-  // Получить выбранный товар
+  // Получение выбранного товара
   getSelectedProduct(): IProduct | null {
     return this._selectedProduct;
   }

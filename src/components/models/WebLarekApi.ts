@@ -7,13 +7,13 @@ export class WebLarekApi {
     this.api = api;
   }
 
-   async fetchProductsList(): Promise<IProduct[]> {
+  async fetchProductsList(): Promise<IProduct[]> {
     const response = await this.api.get<{ items: IProduct[] }>('/product/');
     return response.items;
   }
 
-   async submitOrder(order: IOrderRequest): Promise<IOrderResponse> {
-    return this.api.post<IOrderResponse>('/order/', order);
+  async submitOrder(order: IOrderRequest): Promise<IOrderResponse> {
+    const response = await this.api.post<IOrderResponse>('/order/', order);
+    return response;
   }
-
-}
+}                                       

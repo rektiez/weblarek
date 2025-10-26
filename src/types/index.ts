@@ -13,7 +13,8 @@ export interface IProduct {
   title: string;
   category: string;
   price: number | null;
-}
+} 
+
 
 export interface IBuyer {
   payment: TPayment;

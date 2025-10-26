@@ -2,13 +2,15 @@ import './scss/styles.scss';
 import { Buyer } from './components/models/Buyer';
 import { Cart } from './components/models/Cart';
 import { Catalog } from './components/models/Catalog'
-
 import { apiProducts } from './utils/data';
+import { WebLarekApi } from './components/models/WebLarekApi';
+import { Api } from './components/base/Api';
+import { API_URL } from './utils/constants';
 
 
 const catalog = new Catalog();
 
-catalog.setProducts(apiProducts.items);
+catalog.setProductsList(apiProducts.items);
 console.log('Массив товаров из каталога:', catalog.getProducts());
 
 const productById = catalog.getProductById('854cef69-976d-4c2a-a18c-2aa45846c398');
@@ -55,28 +57,17 @@ buyer.clear();
 console.log('Данные покупателя после очистки:', buyer.getData());
 console.log(`Успешно`);
 
+const api = new Api(API_URL);
+const weblarekApi = new WebLarekApi(api);
 
-import { WebLarekApi } from './components/models/WebLarekApi';
-import { Api } from './components/base/Api';
-import { API_URL } from './utils/constants';
-
-// Создаём экземпляр API-клиента
-const apiClient = new Api(API_URL);
-
-// Создаём сервис для работы с сервером
-const webLarekApi = new WebLarekApi(apiClient);
-
-// Получаем товары
-const products = await webLarekApi.fetchProductsList();
-console.log('Товары:', products);
-
-// Отправляем заказ
-const orderResponse = await webLarekApi.submitOrder({
-  payment: 'card',
-  email: 'user@example.com',
-  phone: '+71234567890',
-  address: 'Spb Vosstania 1',
-  items: ['854cef69-976d-4c2a-a18c-2aa45846c398'],
-  total: 750,
-});
-console.log('Ответ сервера:', orderResponse);
+weblarekApi
+  .fetchProductsList()
+  .then((products) => {
+    console.log('Получено данных с сервера: ', products.length);
+    catalog.setProductsList(products);
+    console.log('Каталог сохранен в массив: ', catalog.getSelectedProduct());
+  })
+  .catch((error) => {
+    console.error('Ошибка загрузки товаров: ', error);
+  });
+  
