@@ -1,6 +1,6 @@
-import { IEvents } from '../../base/Events.ts';
 import { ensureElement } from '../../../utils/utils.ts';
-import { Card, TCard } from './Card.ts';
+import { IEvents } from '../../base/Events.ts';
+import { Card, TCard } from '../Cards/Card.ts';
 
 export type TCardBasket = {index: number} & TCard;
 

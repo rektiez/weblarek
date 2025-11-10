@@ -1,8 +1,7 @@
 import { ensureElement } from '../../../utils/utils.ts';
-import { IErrors } from '../../../types/index.ts';
 import { IEvents } from '../../base/Events.ts';
 import { Form, TForm } from '../Forms/Form.ts';
-
+import { IErrors } from '../../../types/index.ts';
 
 type TContactsForm = {
   emailElement: HTMLInputElement;

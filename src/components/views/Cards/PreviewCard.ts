@@ -1,5 +1,5 @@
-import { IEvents } from '../../base/Events.ts';
 import { ensureElement } from '../../../utils/utils.ts';
+import { IEvents } from '../../base/Events.ts';
 import { IProduct } from '../../../types/index.ts';
 import { Card, TCard } from '../Cards/Card.ts';
 import { categoryMap, CDN_URL } from '../../../utils/constants.ts';

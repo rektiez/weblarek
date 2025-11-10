@@ -1,6 +1,6 @@
+import { ensureElement } from '../../utils/utils.ts';
 import { Component } from '../base/Component.ts';
 import { IEvents } from '../base/Events.ts';
-import { ensureElement } from '../../utils/utils.ts';
 
 interface IModal {
   content: HTMLElement;

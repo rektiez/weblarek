@@ -21,7 +21,6 @@ import { ensureElement, cloneTemplate } from './utils/utils';
 
 const events = new EventEmitter();
 
-// ✅ Модели НЕ принимают events в конструкторе
 const productsModel = new Catalog();
 const cartModel = new Cart();
 const buyerModel = new Buyer();
@@ -29,12 +28,10 @@ const buyerModel = new Buyer();
 const api = new Api(API_URL);
 const larekApi = new WebLarekApi(api);
 
-// ✅ View-компоненты ПРИНИМАЮТ events в конструкторе
 const header = new Header(events, ensureElement<HTMLElement>('.header'));
 const gallery = new Gallery(ensureElement<HTMLElement>('.gallery'));
 const modal = new Modal(events, ensureElement<HTMLElement>('.modal'));
 
-// Шаблоны
 const orderSuccessTempl = ensureElement<HTMLTemplateElement>('#success');
 const cardCatalogTempl = ensureElement<HTMLTemplateElement>('#card-catalog');
 const cardPreviewTempl = ensureElement<HTMLTemplateElement>('#card-preview');
@@ -43,13 +40,11 @@ const basketTempl = ensureElement<HTMLTemplateElement>('#basket');
 const orderFormTempl = ensureElement<HTMLTemplateElement>('#order');
 const contactsFormTempl = ensureElement<HTMLTemplateElement>('#contacts');
 
-// Экземпляры компонентов
 const basket = new Basket(events, cloneTemplate(basketTempl));
 const orderForm = new OrderForm(events, cloneTemplate(orderFormTempl));
 const contactsForm = new ContactsForm(events, cloneTemplate(contactsFormTempl));
 const orderSuccess = new OrderSuccess(events, cloneTemplate(orderSuccessTempl));
 
-// --- Рендеринг каталога ---
 function renderCatalog() {
   const products = productsModel.getProductsList();
   const items = products.map((item) => {
@@ -65,9 +60,8 @@ function renderCatalog() {
   gallery.render({ catalog: items });
 }
 
-events.on('catalog:changed', () => renderCatalog());
+productsModel.on('catalog:changed', () => renderCatalog());
 
-// --- Обработка событий ---
 events.on('card:open', (data: { card: string }) => {
   const product = productsModel.getProductById(data.card);
   if (!product) return;
@@ -83,13 +77,13 @@ events.on('card:open', (data: { card: string }) => {
     image: product.image,
     description: product.description,
     inCart: inCart,
-    disabled: product.price === null,
+    disabled: product.price === null
   };
 
   const previewElement = cardPreview.render(previewData);
   modal.content = previewElement;
   modal.open();
-
+  
   if (product.price === null) {
     cardPreview.disableButton();
   }
@@ -109,7 +103,6 @@ events.on('card:delete', (data: { card: string }) => {
   }
 });
 
-// --- Рендеринг корзины ---
 function renderBasket() {
   const products = cartModel.getProductsList();
   const items = products.map((item, index) => {
@@ -127,17 +120,19 @@ events.on('basket:open', () => {
   modal.open();
 });
 
-events.on('basket:changed', () => {
+cartModel.on('basket:changed', () => {
   header.counter = cartModel.getTotalProducts();
   renderBasket();
-
+  
   const currentPreview = document.querySelector('.modal_active .card_full');
   if (currentPreview) {
     const productId = currentPreview.id;
     const inCart = cartModel.hasProduct(productId);
     const button = currentPreview.querySelector('.card__button') as HTMLButtonElement;
+    
     if (button) {
-      button.textContent = inCart ? 'Удалить из корзины' : 'В корзину';
+      button.textContent = inCart ? 'Удалить из корзины' : 'Купить';
+    
       if (inCart) {
         button.setAttribute('data-in-cart', 'true');
       } else {
@@ -148,8 +143,10 @@ events.on('basket:changed', () => {
 });
 
 events.on('basket:ready', () => {
-  if (cartModel.getTotalProducts() === 0) return;
-
+  if (cartModel.getTotalProducts() === 0) {
+    return;
+  }
+  
   buyerModel.clear();
   const buyer = buyerModel.getBuyerData();
   orderForm.payment = buyer.payment;
@@ -159,25 +156,20 @@ events.on('basket:ready', () => {
   modal.open();
 });
 
-events.on('form:errors', (errors: any) => {
+buyerModel.on('form:errors', (errors: any) => {
   orderForm.validateForm(errors);
   contactsForm.validateForm(errors);
 });
 
 events.on('order:change', (data: { field: string; value: string }) => {
-  switch (data.field) {
-    case 'payment':
-      buyerModel.setBuyerPayment(data.value as TPayment);
-      break;
-    case 'address':
-      buyerModel.setBuyerAddress(data.value);
-      break;
-    case 'email':
-      buyerModel.setBuyerEmail(data.value);
-      break;
-    case 'phone':
-      buyerModel.setBuyerPhone(data.value);
-      break;
+  if (data.field === 'payment') {
+    buyerModel.setBuyerPayment(data.value as TPayment);
+  } else if (data.field === 'address') {
+    buyerModel.setBuyerAddress(data.value);
+  } else if (data.field === 'email') {
+    buyerModel.setBuyerEmail(data.value);
+  } else if (data.field === 'phone') {
+    buyerModel.setBuyerPhone(data.value);
   }
 });
 
@@ -185,16 +177,18 @@ events.on('order:next', () => {
   const buyer = buyerModel.getBuyerData();
   contactsForm.emailValue = buyer.email;
   contactsForm.phoneValue = buyer.phone;
+  
   modal.content = contactsForm.render();
 });
 
 events.on('contacts:submit', () => {
   const buyer = buyerModel.getBuyerData();
-  const orderData: IOrderRequest = {
+
+   const orderData: IOrderRequest = {
     ...buyer,
     total: cartModel.getTotalPrice(),
-    items: cartModel.getProductsList().map((p) => p.id),
-  };
+    items: cartModel.getProductsList().map(product => product.id)
+  }
 
   larekApi
     .submitOrder(orderData)
@@ -203,17 +197,21 @@ events.on('contacts:submit', () => {
       buyerModel.clear();
       orderSuccess.total = orderData.total;
       modal.content = orderSuccess.render();
-      modal.open();
     })
-    .catch((err) => console.error('Ошибка отправки заказа:', err));
+    .catch((error) => {
+      console.error('Ошибка оформления заказа:', error);
+    });
 });
-
+    
 events.on('success:closed', () => {
   modal.close();
 });
 
-// --- Загрузка данных ---
 larekApi
   .fetchProductsList()
-  .then((products) => productsModel.setProductsList(products))
-  .catch((err) => console.error('Ошибка загрузки товаров:', err));
+  .then((products) => {
+    productsModel.setProductsList(products);
+  })
+  .catch((error) => {
+    console.error('Ошибка загрузки товаров: ', error);
+  });
