@@ -1,52 +1,112 @@
-import { IBuyer, TPayment, IErrors } from '../../types';
+import { IBuyer, TPayment, IErrors } from '../../types/index.ts';
+import { EventEmitter } from "../base/Events";
 
-export class Buyer {
-  private _payment: TPayment = null;
-  private _email: string = '';
-  private _phone: string = '';
-  private _address: string = '';
+export class Buyer extends EventEmitter {
+  protected  payment: TPayment = 'card';
+  protected  email: string = '';
+  protected  phone: string = '';
+  protected  address: string = '';
 
-  // Обновить любые поля
-  setData(data: Partial<IBuyer>): void {
-    if (data.payment !== undefined) this._payment = data.payment;
-    if (data.email !== undefined) this._email = data.email;
-    if (data.phone !== undefined) this._phone = data.phone;
-    if (data.address !== undefined) this._address = data.address;
+  setBuyerData(data: Partial<IBuyer>): void {
+    if (data.payment !== undefined) {
+      this.payment = data.payment;
+    }
+    if (data.email !== undefined) {
+      this.email = data.email;
+    }
+    if (data.phone !== undefined) {
+      this.phone = data.phone;
+    }
+    if (data.address !== undefined) {
+      this.address = data.address;
+    }
+    this.validateBuyerData();
   }
 
-  // Геттеры
-  get payment(): TPayment { return this._payment; }
-  get email(): string { return this._email; }
-  get phone(): string { return this._phone; }
-  get address(): string { return this._address; }
+  setBuyerPayment(value: TPayment) { 
+    this.payment = value;
+    this.validateBuyerData();
+  }
 
-  // Получить все данные как объект
-  getData(): IBuyer {
+  setBuyerEmail(value: string) {
+    this.email = value;
+    this.validateBuyerData();
+  }
+
+  setBuyerPhone(value: string) {
+    this.phone = value;
+    this.validateBuyerData();
+  }
+
+  setBuyerAddress(value: string) {
+    this.address = value;
+    this.validateBuyerData();
+  }
+
+  getBuyerData(): IBuyer {
     return {
-      payment: this._payment,
-      email: this._email,
-      phone: this._phone,
-      address: this._address,
+      payment: this.payment,
+      email: this.email,
+      phone: this.phone,
+      address: this.address,
     };
   }
 
-  // Очистить
   clear(): void {
-    this._payment = null;
-    this._email = '';
-    this._phone = '';
-    this._address = '';
+    this.payment = null;
+    this.email = '';
+    this.phone = '';
+    this.address = '';
+    this.validateBuyerData();
   }
 
-  // Валидация
-  validate(): IErrors {
+  validateBuyerData(): void {
     const errors: IErrors = {};
+    
+    if (!this.payment) {
+      errors.payment = 'Не выбран вид оплаты';
+    } 
 
-    if (this._payment === null) errors.payment = 'Выберите способ оплаты';
-    if (!this._email.trim()) errors.email = 'Укажите email';
-    if (!this._phone.trim()) errors.phone = 'Укажите телефон';
-    if (!this._address.trim()) errors.address = 'Укажите адрес';
+    if (!this.email || this.email.trim() === '') {
+      errors.email = 'Укажите емэйл';
+    }
+
+    if(!this.phone || this.phone.trim() === '') {
+      errors.phone = 'Укажите номер телефона';
+    }
+
+    if(!this.address || this.address.trim() === '') {
+      errors.address = 'Укажите адрес доставки';
+    }
+    this.emit('form:errors', errors);
+  }
+
+  validateOrder(): IErrors {
+    const errors: IErrors = {};
+    
+    if (!this.payment) {
+      errors.payment = 'Не выбран вид оплаты';
+    }
+
+    if (!this.address || this.address.trim() === '') {
+      errors.address = 'Укажите адрес доставки';
+    }
 
     return errors;
   }
+
+  validateContacts(): IErrors {
+    const errors: IErrors = {};
+    
+    if (!this.email || this.email.trim() === '') {
+      errors.email = 'Укажите email';
+    }
+
+    if (!this.phone || this.phone.trim() === '') {
+      errors.phone = 'Укажите номер телефона';
+    }
+
+    return errors;
+  }
+
 }

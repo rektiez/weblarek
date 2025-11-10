@@ -5,7 +5,7 @@ import { IProduct } from '../../../types/index.ts';
 
 export type TCard = Pick<IProduct, 'title' | 'price' | 'id'>;
 
-export class Card<T = {}> extends Component<TCard & T>  {
+export abstract class Card<T = {}> extends Component<TCard & T>  {
   protected titleElement: HTMLElement;
   protected priceElement: HTMLElement;
   public _id: string = '';

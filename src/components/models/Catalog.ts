@@ -1,34 +1,29 @@
-import { IProduct } from '../../types';
+import { IProduct } from '../../types/index.ts';
+import { EventEmitter } from "../base/Events";
 
-export class Catalog {
-  // Массив всех товаров
-  private _products: IProduct[] = [];
+export class Catalog extends EventEmitter {
+  protected  productsList: IProduct [] = [];
+  protected  selectedProduct: IProduct | null = null;
 
-  // Товар, выбранный для подробного отображения
-  private _selectedProduct: IProduct | null = null;
-
-  // Сохранение массива товаров
   setProductsList(products: IProduct[]): void {
-    this._products = products;
+    this.productsList = products;
+    this.emit('catalog:changed');
   }
 
-  // Получение списка всех товаров
-  getProducts(): IProduct[] {
-    return this._products;
+  getProductsList(): IProduct [] {
+    return this.productsList;
   }
 
-  // Получение одного товара по ID
-  getProductById(id: string): IProduct | undefined {
-    return this._products.find((product) => product.id === id);
+  getProductById(id: string): IProduct | null {
+    return this.productsList.find(product => product.id === id) || null;
   }
 
-  // Сохранение товара для подробного отображения
-  setSelectedProduct(product: IProduct): void {
-    this._selectedProduct = product;
+  selectProduct(product: IProduct): void {
+    this.selectedProduct = product;
   }
 
-  // Получение выбранного товара
   getSelectedProduct(): IProduct | null {
-    return this._selectedProduct;
+    return this.selectedProduct;
   }
+
 }
