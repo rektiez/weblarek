@@ -23,7 +23,7 @@ export interface IBuyer {
   address: string;
 }
 
-export interface IErrors {
+export interface IValidationErrors {
   payment?: string;
   email?: string;
   phone?: string;

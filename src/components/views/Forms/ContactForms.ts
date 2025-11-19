@@ -1,14 +1,14 @@
 import { ensureElement } from '../../../utils/utils.ts';
 import { IEvents } from '../../base/Events.ts';
 import { Form, TForm } from '../Forms/Form.ts';
-import { IErrors } from '../../../types/index.ts';
+import { IValidationErrors } from '../../../types/index.ts';
 
 type TContactsForm = {
   emailElement: HTMLInputElement;
   phoneElement: HTMLInputElement;
 } & TForm
 
-export class ContactsForm extends Form<TContactsForm> {
+export class ContactForms extends Form<TContactsForm> {
   protected emailElement: HTMLInputElement;
   protected phoneElement: HTMLInputElement;
 
@@ -32,7 +32,7 @@ export class ContactsForm extends Form<TContactsForm> {
       this.events.emit('contacts:submit');
     });
 
-    this.events.on('form:errors', (errors: IErrors) => {
+    this.events.on('form:errors', (errors: IValidationErrors) => {
       this.validateForm(errors);
     });
   }
@@ -45,7 +45,7 @@ export class ContactsForm extends Form<TContactsForm> {
     this.phoneElement.value = value;
   }
 
-  validateForm(errors: IErrors): void {
+  validateForm(errors: IValidationErrors): void {
     const contactErrors = [errors.email, errors.phone].filter(Boolean);
     
     this.isButtonValid = contactErrors.length === 0;

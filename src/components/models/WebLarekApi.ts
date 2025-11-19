@@ -1,19 +1,16 @@
-import { IApi, IProduct, IOrderRequest, IOrderResponse } from '../../types/index.ts';
-
-export class WebLarekApi {
-  protected  api: IApi;
-
-  constructor(api: IApi) {
-    this.api = api;
+import { IProduct, IOrderRequest, IOrderResponse } from '../../types';
+import { Api } from '../base/Api';
+export class ApiService extends Api {
+    constructor(baseUrl: string, options: RequestInit = {}) {
+      super(baseUrl, options); // инициализация конструктора родительского класса
   }
 
-   async fetchProductsList(): Promise<IProduct[]> {
-    const response = await this.api.get<{ items: IProduct[]}>('/product/');
-    return response.items;
-  }
+    async fetchProducts(): Promise<IProduct[]> {
+        const response = await this.get<{ items: IProduct[] }>("/product");
+        return response.items || []; // возвращаем массив товаров
+    }
 
-   async submitOrder(order: IOrderRequest): Promise<IOrderResponse> {
-    return this.api.post<IOrderResponse>('/order/', order);
-  }
-
+    async sendOrder(evt: IOrderRequest): Promise<IOrderResponse> {
+        return await this.post<IOrderResponse>("/order/", evt);
+    }
 }

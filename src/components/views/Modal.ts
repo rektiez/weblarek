@@ -1,40 +1,38 @@
-import { ensureElement } from '../../utils/utils.ts';
-import { Component } from '../base/Component.ts';
-import { IEvents } from '../base/Events.ts';
+import { Component } from "../base/Component" 
+import { IEvents } from "../base/Events"
+import { ensureElement } from "../../utils/utils" 
 
-interface IModal {
-  content: HTMLElement;
-}
+export class Modal extends Component<HTMLElement> {
+  protected modalContentElement: HTMLElement;
+  protected modalCloseButtonElement: HTMLButtonElement;
 
-export class Modal extends Component<IModal> {
-  protected closeButton: HTMLButtonElement;
-  protected contentElement: HTMLElement;
-
-  constructor(protected events: IEvents, container:HTMLElement) {
+  constructor(container: HTMLElement, protected evt: IEvents) {
     super(container);
+    this.modalContentElement = ensureElement<HTMLElement>('.modal__content', this.container);
+    this.modalCloseButtonElement = ensureElement<HTMLButtonElement>('.modal__close', this.container);  
 
-    this.closeButton = ensureElement<HTMLButtonElement>('.modal__close', this.container);
-    this.contentElement = ensureElement<HTMLElement>('.modal__content', this.container);
-    this.closeButton.addEventListener('click',
-      () => this.close());
-    this.container.addEventListener('click', (e: MouseEvent) => {
-        if (e.target === this.container) {
-          this.close();
-        }
-      })  
+    this.modalCloseButtonElement.addEventListener('click', () => {
+      this.close();
+    });
+
+    this.container.addEventListener('click', (event: MouseEvent) => {
+      if (event.target === event.currentTarget) {
+        this.close()
+      }
+    });
   }
 
-  open() {
+  set content(value: HTMLElement){
+    this.modalContentElement.replaceChildren(value);
+  }
+
+  open(content: HTMLElement) {
     this.container.classList.add('modal_active');
+    this.modalContentElement.replaceChildren(content);
   }
 
   close() {
     this.container.classList.remove('modal_active');
-    this.contentElement.replaceChildren();
-  }
-
-  set content(element: HTMLElement) {
-    this.contentElement.replaceChildren();
-    this.contentElement.appendChild(element);
+    this.evt.emit('modal:close');
   }
 }

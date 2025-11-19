@@ -1,7 +1,7 @@
 import { ensureElement } from '../../../utils/utils.ts';
 import { IEvents } from '../../base/Events.ts';
 import { Form, TForm } from '../Forms/Form.ts';
-import { TPayment, IErrors } from '../../../types/index.ts';
+import { TPayment, IValidationErrors } from '../../../types/index.ts';
 
 type TOrderForm = {
   addressElement: HTMLInputElement;
@@ -40,7 +40,7 @@ export class OrderForm extends Form<TOrderForm> {
       this.events.emit('order:next');
     });
 
-    this.events.on('form:errors', (errors: IErrors) => {
+    this.events.on('form:errors', (errors: IValidationErrors) => {
       this.validateForm(errors);
     });
   }
@@ -73,7 +73,7 @@ export class OrderForm extends Form<TOrderForm> {
     this.addressElement.value = value;
   }
 
-  validateForm(errors: IErrors): void {
+  validateForm(errors: IValidationErrors): void {
     const orderErrors = [errors.address, errors.payment].filter(Boolean);
     
     this.isButtonValid = orderErrors.length === 0;

@@ -2,15 +2,20 @@ import { IProduct } from '../../types/index.ts';
 import { EventEmitter } from "../base/Events";
 
 export class Catalog extends EventEmitter {
-  protected  productsList: IProduct [] = [];
-  protected  selectedProduct: IProduct | null = null;
+  protected productsList: IProduct[] = [];
+  protected selectedProduct: IProduct | null = null;
+
+  // ✅ Добавьте конструктор
+  constructor(protected events: EventEmitter) {
+    super();
+  }
 
   setProductsList(products: IProduct[]): void {
     this.productsList = products;
     this.emit('catalog:changed');
   }
 
-  getProductsList(): IProduct [] {
+  getProductsList(): IProduct[] {
     return this.productsList;
   }
 
@@ -25,5 +30,4 @@ export class Catalog extends EventEmitter {
   getSelectedProduct(): IProduct | null {
     return this.selectedProduct;
   }
-
 }

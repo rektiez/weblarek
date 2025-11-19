@@ -1,19 +1,16 @@
-import { ensureElement } from '../../utils/utils.ts';
-import { Component } from '../base/Component.ts';
+import { Component } from "../base/Component";
 
-interface IGallery {
-  catalog: HTMLElement[];
+interface IGalleryData {
+    catalog: HTMLElement[];
 }
 
-export class Gallery extends Component<IGallery> {
-  protected catalogElement: HTMLElement;
+export class Gallery extends Component<IGalleryData> {
 
-   constructor(container?: HTMLElement) {
-    super(container || ensureElement<HTMLElement>('.gallery'));
-    this.catalogElement = this.container;
-  }
+    constructor(container: HTMLElement) {
+        super(container);
+    }
 
-  set catalog(items: HTMLElement[]) {
-    this.catalogElement.replaceChildren(...items);
-  }
+    set catalog(items: HTMLElement[]) {
+        this.container.replaceChildren(...items);
+    }
 }

@@ -1,112 +1,85 @@
-import { IBuyer, TPayment, IErrors } from '../../types/index.ts';
-import { EventEmitter } from "../base/Events";
+import { IBuyer, TPayment, IValidationErrors } from '../../types';
+import { EventEmitter } from '../base/Events';
 
 export class Buyer extends EventEmitter {
-  protected  payment: TPayment = 'card';
-  protected  email: string = '';
-  protected  phone: string = '';
-  protected  address: string = '';
+  private _payment: TPayment = null;
+  private _email = '';
+  private _phone = '';
+  private _address = '';
 
-  setBuyerData(data: Partial<IBuyer>): void {
-    if (data.payment !== undefined) {
-      this.payment = data.payment;
-    }
-    if (data.email !== undefined) {
-      this.email = data.email;
-    }
-    if (data.phone !== undefined) {
-      this.phone = data.phone;
-    }
-    if (data.address !== undefined) {
-      this.address = data.address;
-    }
-    this.validateBuyerData();
+  // --- Геттеры/сеттеры ---
+  get payment(): TPayment { return this._payment; }
+  set payment(value: TPayment) {
+    this._payment = value;
+    this.emit('buyer:changed', { field: 'payment' });
   }
 
-  setBuyerPayment(value: TPayment) { 
-    this.payment = value;
-    this.validateBuyerData();
+  get email(): string { return this._email; }
+  set email(value: string) {
+    this._email = value;
+    this.emit('buyer:changed', { field: 'email' });
   }
 
-  setBuyerEmail(value: string) {
-    this.email = value;
-    this.validateBuyerData();
+  get phone(): string { return this._phone; }
+  set phone(value: string) {
+    this._phone = value;
+    this.emit('buyer:changed', { field: 'phone' });
   }
 
-  setBuyerPhone(value: string) {
-    this.phone = value;
-    this.validateBuyerData();
+  get address(): string { return this._address; }
+  set address(value: string) {
+    this._address = value;
+    this.emit('buyer:changed', { field: 'address' });
   }
 
-  setBuyerAddress(value: string) {
-    this.address = value;
-    this.validateBuyerData();
-  }
-
-  getBuyerData(): IBuyer {
+  // --- API ---
+  getData(): IBuyer {
     return {
-      payment: this.payment,
-      email: this.email,
-      phone: this.phone,
-      address: this.address,
+      payment: this._payment,
+      email: this._email,
+      phone: this._phone,
+      address: this._address,
     };
   }
 
-  clear(): void {
-    this.payment = null;
-    this.email = '';
-    this.phone = '';
-    this.address = '';
-    this.validateBuyerData();
+  setData(data: Partial<IBuyer>) {
+    if (data.payment !== undefined) this.payment = data.payment;
+    if (data.email !== undefined) this.email = data.email;
+    if (data.phone !== undefined) this.phone = data.phone;
+    if (data.address !== undefined) this.address = data.address;
   }
 
-  validateBuyerData(): void {
-    const errors: IErrors = {};
-    
-    if (!this.payment) {
-      errors.payment = 'Не выбран вид оплаты';
-    } 
-
-    if (!this.email || this.email.trim() === '') {
-      errors.email = 'Укажите емэйл';
-    }
-
-    if(!this.phone || this.phone.trim() === '') {
-      errors.phone = 'Укажите номер телефона';
-    }
-
-    if(!this.address || this.address.trim() === '') {
-      errors.address = 'Укажите адрес доставки';
-    }
-    this.emit('form:errors', errors);
+  clear() {
+    this._payment = null;
+    this._email = '';
+    this._phone = '';
+    this._address = '';
   }
 
-  validateOrder(): IErrors {
-    const errors: IErrors = {};
-    
-    if (!this.payment) {
-      errors.payment = 'Не выбран вид оплаты';
-    }
-
-    if (!this.address || this.address.trim() === '') {
-      errors.address = 'Укажите адрес доставки';
-    }
-
+  // --- Валидация ---
+  validateOrder(): IValidationErrors {
+    const errors: IValidationErrors = {};
+    if (!this._payment) errors.payment = 'Выберите способ оплаты';
+    if (!this._address.trim()) errors.address = 'Укажите адрес';
     return errors;
   }
 
-  validateContacts(): IErrors {
-    const errors: IErrors = {};
-    
-    if (!this.email || this.email.trim() === '') {
+  validateContacts(): IValidationErrors {
+    const errors: IValidationErrors = {};
+    if (!this._email.trim()) {
       errors.email = 'Укажите email';
+    } else if (!/^\S+@\S+\.\S+$/.test(this._email)) {
+      errors.email = 'Некорректный email';
     }
-
-    if (!this.phone || this.phone.trim() === '') {
-      errors.phone = 'Укажите номер телефона';
+    if (!this._phone.trim()) {
+      errors.phone = 'Укажите телефон';
+    } else if (!/^\+?[\d\-\s()]{10,}$/.test(this._phone)) {
+      errors.phone = 'Некорректный телефон';
     }
-
     return errors;
   }
 
+  validateAll(): IValidationErrors {
+    return { ...this.validateOrder(), ...this.validateContacts() };
+  }
 }
