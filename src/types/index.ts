@@ -1,6 +1,6 @@
 // src/types/index.ts
 
-export type TPayment = 'card' | 'cash';
+export type TPayment = 'card' | 'cash' | null;
 
 export interface IProduct {
   id: string;
@@ -38,5 +38,3 @@ export interface IErrors {
   phone?: string;
   address?: string;
 }
-
-export interface IValidationErrors extends IErrors {}

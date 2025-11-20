@@ -21,7 +21,7 @@ import { WebLarekApi } from "./components/models/WebLarekApi";
 const events = new EventEmitter();
 const apiService = new WebLarekApi(API_URL);
 const productsModel = new Catalog(events);
-const cart = new Cart(events);
+const cartModel = new Cart(events);
 const buyer = new Buyer(events);
 
 const basketTemplate = ensureElement<HTMLTemplateElement>("#basket");
@@ -42,9 +42,10 @@ const contactsForm = new ContactForms(
   cloneTemplate(contactsFormTemplate),
   events
 );
+const preview = new PreviewCard(events);
 
 apiService
-  .fetchProducts()
+  .getProducts()
   .then((products) => {
     productsModel.setProducts(products);
   })
@@ -66,26 +67,25 @@ events.on("product:select", (product: IProduct) => {
 });
 
 events.on("catalog:selected", (product: IProduct) => {
-  const preview = new PreviewCard(events);
-  preview.inBasket = cart.hasItem(product.id);
+  preview.inBasket = cartModel.hasItem(product.id);
   modal.open(preview.render(product));
 });
 
-events.on("card:toggle", (product: IProduct) => {
-  const inBasket = cart.hasItem(product.id);
+events.on("card:add", (product: IProduct) => {
+  const inBasket = cartModel.hasItem(product.id);
   if (!inBasket) {
-    cart.addItem(product);
+    cartModel.addItem(product);
   }
   modal.close();
 });
 
 events.on("basket:changed", () => {
-  header.counter = cart.getCount();
-  const renderedCards = cart.getItems().map((product, index) => {
+  header.counter = cartModel.getCount();
+  const renderedCards = cartModel.getItems().map((product, index) => {
     return new BasketCard(events).render({ ...product, index });
   });
   basket.items = renderedCards;
-  basket.total = cart.getTotal();
+  basket.total = cartModel.getTotal();
 });
 
 events.on("basket:open", () => {
@@ -93,7 +93,8 @@ events.on("basket:open", () => {
 });
 
 events.on("card:remove", (product: IProduct) => {
-  cart.removeItem(product.id);
+  cartModel.removeItem(product.id);
+   modal.close();
 });
 
 events.on("basket:order", () => {
@@ -122,13 +123,12 @@ events.on("contacts:phone", (data: { phone: string }) => {
 
 events.on("buyer:changed", (data: { field: string }) => {
   const validation = buyer.validateBuyerNotis();
-  const selectedPayment = buyer.getBuyerNotis().payment;
-
+  const buyerData = buyer.getBuyerData();
   if (data.field === "payment" || data.field === "address") {
     const isValid = orderForm.checkValidation(validation);
     orderForm.setSubmitEnabled(isValid);
     orderForm.toggleErrorClass(!isValid);
-    orderForm.togglePaymentButtonStatus(selectedPayment);
+    orderForm.togglePaymentButtonStatus(buyerData.payment);
   } else if (data.field === "email" || data.field === "phone") {
     const isValid = contactsForm.checkValidation(validation);
     contactsForm.setSubmitEnabled(isValid);
@@ -138,16 +138,16 @@ events.on("buyer:changed", (data: { field: string }) => {
 
 events.on("contacts:submit", () => {
   const orderData: IOrderRequest = {
-    ...buyer.getBuyerNotis(),
-    items: cart.getItems().map((product) => product.id),
-    total: cart.getTotal(),
+    ...buyer.getBuyerData(),
+    items: cartModel.getItems().map((product) => product.id),
+    total: cartModel.getTotal(),
   };
 
   apiService
     .sendOrder(orderData)
     .then((result) => {
       if (result) {
-        cart.clear();
+        cartModel.clear();
         buyer.clearBuyerNotis();
         modal.content = success.render();
         orderForm.resetForm();

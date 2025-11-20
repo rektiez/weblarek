@@ -1,5 +1,5 @@
 import { ensureElement } from "../../../utils/utils";
-import { IValidationErrors } from "../../../types";
+import { IErrors } from "../../../types";
 import { TPayment } from "../../../types";
 import { IEvents } from "../../base/Events";
 import { Form } from "./Form";
@@ -53,7 +53,7 @@ export class OrderForm extends Form {
     this.formAddressInputElement.value = "";
   }
 
-  checkValidation(errors: IValidationErrors): boolean {
+  checkValidation(errors: IErrors): boolean {
     this.clearErrors();
     this.error = errors.payment || errors.address || "";
     return !errors.payment && !errors.address;

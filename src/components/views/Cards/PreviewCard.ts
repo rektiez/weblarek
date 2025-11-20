@@ -20,10 +20,14 @@ export class PreviewCard extends Card {
       this.container
     );
     this.cardButtonElement.addEventListener("click", () => {
-      if (this.currentProduct) {
-        this.events.emit("card:toggle", this.currentProduct);
-      }
-    });
+  if (this.currentProduct) {
+    if (this._inBasket) {
+      this.events.emit("card:remove", this.currentProduct); // ← УДАЛЕНИЕ
+    } else {
+      this.events.emit("card:add", this.currentProduct);      // ← ДОБАВЛЕНИЕ
+    }
+  }
+});;
   }
 
   render(product: IProduct): HTMLElement {
@@ -51,6 +55,6 @@ export class PreviewCard extends Card {
       this.cardButtonElement.textContent = this._inBasket
         ? "Удалить из корзины"
         : "Купить";
-    }
+    } 
   }
 }

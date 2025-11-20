@@ -36,7 +36,7 @@ export class Buyer {
     this.events.emit("buyer:changed", { field: "phone" });
   }
 
-  getBuyerNotis(): IBuyer {
+  getBuyerData(): IBuyer {
     return {
       payment: this._payment as TPayment,
       address: this._address,
@@ -50,6 +50,7 @@ export class Buyer {
     this._address = "";
     this._email = "";
     this._phone = "";
+     this.events.emit("buyer:changed", { field: "all" });
   }
 
   validateBuyerNotis(): Record<string, string> {

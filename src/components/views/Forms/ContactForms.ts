@@ -1,6 +1,6 @@
 import { ensureElement } from "../../../utils/utils";
 import { IEvents } from "../../base/Events";
-import { IValidationErrors } from "../../../types";
+import { IErrors } from "../../../types";
 import { Form } from "./Form";
 
 export class ContactForms extends Form {
@@ -36,7 +36,7 @@ export class ContactForms extends Form {
     });
   }
 
-  checkValidation(errors: IValidationErrors): boolean {
+  checkValidation(errors: IErrors): boolean {
     this.clearErrors();
     this.error = errors.email || errors.phone || "";
     return !errors.email && !errors.phone;

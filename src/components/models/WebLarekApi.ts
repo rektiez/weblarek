@@ -6,7 +6,7 @@ export class WebLarekApi extends Api {
     super(baseUrl, options); 
   }
 
-  async fetchProducts(): Promise<IProduct[]> {
+  async getProducts(): Promise<IProduct[]> {
     const response = await this.get<{ items: IProduct[] }>("/product");
     return response.items || []; 
   }

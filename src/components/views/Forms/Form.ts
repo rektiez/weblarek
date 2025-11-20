@@ -1,7 +1,7 @@
 import { ensureElement } from "../../../utils/utils";
 import { Component } from "../../base/Component";
 import { IEvents } from "../../base/Events";
-import { IValidationErrors } from "../../../types";
+import { IErrors } from "../../../types";
 
 export abstract class Form extends Component<HTMLElement> {
   protected formSubmitButtonElement: HTMLButtonElement;
@@ -40,5 +40,5 @@ export abstract class Form extends Component<HTMLElement> {
     this.formErrorsElement.textContent = "";
   }
 
-  abstract checkValidation(errors: IValidationErrors): boolean;
+  abstract checkValidation(errors: IErrors): boolean;
 }
