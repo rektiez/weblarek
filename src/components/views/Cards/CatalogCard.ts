@@ -1,6 +1,6 @@
 import { Card } from "./Card";
-import { IEvents } from "../../base/Events";
 import { IProduct } from "../../../types";
+import { IEvents } from "../../base/Events";
 
 export class CatalogCard extends Card {
   private currentProduct: IProduct | null = null; 

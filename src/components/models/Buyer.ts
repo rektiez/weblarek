@@ -1,40 +1,64 @@
-import { IBuyer, TPayment, IValidationErrors } from '../../types';
+import { IBuyer, TPayment } from '../../types';
+import { EventEmitter } from '../base/Events';
 
 export class Buyer {
-  private _payment: TPayment = null;
-  private _email = '';
-  private _phone = '';
-  private _address = '';
+  private _payment: TPayment | null = null;
+  private _address: string = '';
+  private _email: string = '';
+  private _phone: string = '';
+  
+  constructor(private events: EventEmitter) {}
 
-  setBuyerNotis(data: Partial<IBuyer>): void {
-    if (data.payment !== undefined) this._payment = data.payment;
-    if (data.email !== undefined) this._email = data.email;
-    if (data.phone !== undefined) this._phone = data.phone;
-    if (data.address !== undefined) this._address = data.address;
+  setBuyerNotis(data: IBuyer): void {
+    this._payment = data.payment;
+    this._address = data.address;
+    this._email = data.email;
+    this._phone = data.phone;
+  }
+
+  setPayment(payment: TPayment): void {
+    this._payment = payment;
+    this.events.emit('buyer:changed', { field: 'payment' });
+  }
+
+  setAddress(address: string): void {
+    this._address = address;
+    this.events.emit('buyer:changed', { field: 'address' });
+  }
+
+  setEmail(email: string): void {
+    this._email = email;
+    this.events.emit('buyer:changed', { field: 'email' });
+  }
+
+  setPhone(phone: string): void {
+    this._phone = phone;
+    this.events.emit('buyer:changed', { field: 'phone' });
   }
 
   getBuyerNotis(): IBuyer {
     return {
-      payment: this._payment,
+      payment: this._payment as TPayment,
+      address: this._address,
       email: this._email,
       phone: this._phone,
-      address: this._address,
     };
   }
 
   clearBuyerNotis(): void {
     this._payment = null;
+    this._address = '';
     this._email = '';
     this._phone = '';
-    this._address = '';
   }
 
-  validateBuyerNotis(): IValidationErrors {
-    const errors: IValidationErrors = {};
-    if (!this._payment) errors.payment = 'Выберите способ оплаты';
-    if (!this._email.trim()) errors.email = 'Укажите email';
-    if (!this._phone.trim()) errors.phone = 'Укажите телефон';
-    if (!this._address.trim()) errors.address = 'Укажите адрес';
-    return errors;
-  }
+  validateBuyerNotis(): Record<string, string> {
+        const errors: Record<string, string> = {};
+
+        if (!this._payment) errors.payment = 'Не выбран способ оплаты';
+        if (!this._email) errors.email = 'Укажите электронную почту';
+        if (!this._phone) errors.phone = 'Введите номер телефона';
+        if (!this._address) errors.address = 'Необходим адрес доставки';
+        return errors;
+    }
 }

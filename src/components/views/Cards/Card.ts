@@ -1,8 +1,8 @@
+import { categoryMap } from "../../../utils/constants";
+import { Component } from "../../base/Component" 
 import { IEvents } from "../../base/Events"
 import { CDN_URL } from "../../../utils/constants";
 import { IProduct } from "../../../types";
-import { categoryMap } from "../../../utils/constants";
-import { Component } from "../../base/Component" 
 import { cloneTemplate, ensureElement } from "../../../utils/utils" 
 
 export abstract class Card extends Component<IProduct> {

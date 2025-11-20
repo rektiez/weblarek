@@ -1,6 +1,7 @@
 import { IProduct, IOrderRequest, IOrderResponse } from '../../types';
 import { Api } from '../base/Api';
-export class ApiService extends Api {
+
+export class WebLarekApi extends Api {
     constructor(baseUrl: string, options: RequestInit = {}) {
       super(baseUrl, options); // инициализация конструктора родительского класса
   }

@@ -1,10 +1,6 @@
-export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';
-export type TPayment = 'card' | 'cash' | null
+// src/types/index.ts
 
-export interface IApi {
-    get<T extends object>(uri: string): Promise<T>;
-    post<T extends object>(uri: string, data: object, method?: ApiPostMethods): Promise<T>;
-}
+export type TPayment = 'card' | 'cash';
 
 export interface IProduct {
   id: string;
@@ -13,8 +9,7 @@ export interface IProduct {
   title: string;
   category: string;
   price: number | null;
-} 
-
+}
 
 export interface IBuyer {
   payment: TPayment;
@@ -23,18 +18,27 @@ export interface IBuyer {
   address: string;
 }
 
-export interface IValidationErrors {
+export interface IOrderRequest {
+  payment: TPayment;
+  email: string;
+  phone: string;
+  address: string;
+  items: string[];
+  total: number;
+}
+
+export interface IOrderResponse {
+  id: string;
+  total: number;
+}
+
+// Используется в BuyerModel
+export interface IErrors {
   payment?: string;
   email?: string;
   phone?: string;
   address?: string;
 }
-export interface IOrderRequest extends IBuyer {
-  total: number;
-  items: string[]; 
-}
 
-export interface IOrderResponse {
-  id: string;
-  total: number; 
-}
+// Для форм
+export interface IValidationErrors extends IErrors {}

@@ -1,6 +1,6 @@
 import { Component } from "../base/Component" 
-import { IEvents } from "../base/Events"
 import { ensureElement } from "../../utils/utils" 
+import { IEvents } from "../base/Events"
 
 export class Modal extends Component<HTMLElement> {
   protected modalContentElement: HTMLElement;

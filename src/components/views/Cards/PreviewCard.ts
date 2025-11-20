@@ -1,7 +1,7 @@
-import { Card } from "./Card"; 
-import { IProduct } from "../../../types";
 import { ensureElement } from "../../../utils/utils"
 import { IEvents } from "../../base/Events";
+import { Card } from "./Card"; 
+import { IProduct } from "../../../types";
 
 export class PreviewCard extends Card {
   protected description: HTMLElement;

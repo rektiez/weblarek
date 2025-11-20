@@ -1,26 +1,31 @@
 import { IProduct } from '../../types';
+import { EventEmitter } from '../base/Events';
 
 export class Catalog {
-  private _products: IProduct[] = [];
-  private _selected: IProduct | null = null;
+  private products: IProduct[] = [];
+  private selected: IProduct | null = null;
+
+  constructor(private events: EventEmitter) {}
 
   setProducts(products: IProduct[]): void {
-    this._products = products;
+    this.products = products;
+    this.events.emit('catalog:changed');
   }
 
   getProducts(): IProduct[] {
-    return [...this._products];
-  }
-
-  setSelected(product: IProduct): void {
-    this._selected = product;
-  }
-
-  getSelected(): IProduct | null {
-    return this._selected;
+    return this.products;
   }
 
   getProductById(id: string): IProduct | undefined {
-    return this._products.find(p => p.id === id);
+    return this.products.find((product) => product.id === id);
+  }
+
+  setSelected(product: IProduct): void {
+    this.selected = product;
+    this.events.emit('catalog:selected', product);
+  }
+
+  getSelected(): IProduct | null {
+    return this.selected;
   }
 }

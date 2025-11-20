@@ -1,44 +1,38 @@
-import { ensureElement, ensureAllElements } from '../../../utils/utils.ts';
-import { Component } from '../../base/Component.ts';
-import { IEvents } from '../../base/Events.ts';
+import { IValidationErrors } from "../../../types";
+import { Component } from "../../base/Component" 
+import { ensureElement } from "../../../utils/utils" 
+import { IEvents } from "../../base/Events"
 
-export type TForm = {
-  formElement: HTMLFormElement;
-  formErrors: HTMLElement;
-  nextButton: HTMLButtonElement;
-  formInputs: HTMLInputElement[];
-}
+export abstract class Form extends Component<HTMLElement> {
+    protected formSubmitButtonElement: HTMLButtonElement;
+    protected formErrorsElement: HTMLElement;
 
-export class Form<T = {}> extends Component<TForm & T> {
-  protected formElement: HTMLFormElement;
-  protected formErrors: HTMLElement;
-  protected nextButton: HTMLButtonElement;
-  protected formInputs: HTMLInputElement[];
-
-  constructor(protected events: IEvents, container: HTMLElement) {
-    super(container);
-
-    this.formElement = container instanceof HTMLFormElement
-    ? container
-    : ensureElement<HTMLFormElement>('.form', this.container);
-    this.nextButton = ensureElement<HTMLButtonElement>('button[type="submit"]', this.container);
-    
-    this.nextButton.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (this.nextButton.disabled) return;
-      this.events.emit('order:next');
-    });
-    this.formErrors = ensureElement<HTMLElement>('.form__errors', this.container);
-    this.formInputs = ensureAllElements<HTMLInputElement>('.form__input', this.container);
-  }
-
-  set isButtonValid(value: boolean) {
-    this.nextButton.disabled = !value;
-  }
-
-  set errors(text: string) {
-    if (this.formErrors) {
-      this.formErrors.textContent = text;
+    constructor(protected container: HTMLElement, protected events: IEvents) {
+        super(container);
+        this.formSubmitButtonElement = ensureElement<HTMLButtonElement>('button[type="submit"]', this.container);
+        this.formErrorsElement = ensureElement<HTMLElement>('.form__errors', this.container);
     }
-  }
+
+    set error(message: string) {
+        this.formErrorsElement.textContent = message;
+    }
+
+    toggleErrorClass(value: boolean): void {
+        this.formErrorsElement.classList.toggle('form__errors-active', value);
+    }
+
+    resetForm(): void {
+        this.clearErrors();
+        this.formSubmitButtonElement.toggleAttribute('disabled', true);
+    }
+
+    setSubmitEnabled(enabled: boolean): void {
+        this.formSubmitButtonElement.disabled = !enabled;
+    }
+
+    clearErrors(): void {
+        this.formErrorsElement.textContent = '';
+    }
+
+    abstract checkValidation(errors: IValidationErrors): boolean;
 }

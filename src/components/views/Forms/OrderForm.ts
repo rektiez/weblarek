@@ -1,87 +1,62 @@
-import { ensureElement } from '../../../utils/utils.ts';
-import { IEvents } from '../../base/Events.ts';
-import { Form, TForm } from '../Forms/Form.ts';
-import { TPayment, IValidationErrors } from '../../../types/index.ts';
+import { ensureElement } from "../../../utils/utils" 
+import { IValidationErrors } from "../../../types";
+import { TPayment } from "../../../types";
+import { IEvents } from "../../base/Events"
+import { Form } from "./Form";
 
-type TOrderForm = {
-  addressElement: HTMLInputElement;
-  cashButton: HTMLButtonElement;
-  cardButton: HTMLButtonElement;
-} & TForm
+export class OrderForm extends Form {
+    protected formAddressInputElement: HTMLInputElement;
+    protected formCardPayButtonElement: HTMLButtonElement;
+    protected formCashPayButtonElement: HTMLButtonElement;
 
-export class OrderForm extends Form<TOrderForm> {
-  protected addressElement: HTMLInputElement;
-  protected cashButton: HTMLButtonElement;
-  protected cardButton: HTMLButtonElement;
+    constructor(container: HTMLElement, events: IEvents) {
+      super(container,events)
+      this.formCardPayButtonElement = ensureElement<HTMLButtonElement>('[name="card"]', this.container);
+      this.formAddressInputElement = ensureElement<HTMLInputElement>('[name="address"]', this.container);
+      this.formCashPayButtonElement = ensureElement<HTMLButtonElement>('[name="cash"]', this.container);
+      
+      this.formCardPayButtonElement.addEventListener('click', () => {
+        this.events.emit('payment:change', { payment: 'card' });
+      })
 
-  constructor(protected events: IEvents, container: HTMLElement) {
-    super(events, container);
+      this.formSubmitButtonElement.addEventListener('click', (event) => { 
+        event.preventDefault();
+        this.events.emit('order:submit');
+      })
 
-    this.cashButton = ensureElement<HTMLButtonElement>('button[name="cash"]', this.container);
-    this.cardButton = ensureElement<HTMLButtonElement>('button[name="card"]', this.container);
-    this.addressElement = ensureElement<HTMLInputElement>('input[name="address"]', this.container);
-    this.cashButton.classList.remove('button_alt-active');
-    this.cardButton.classList.remove('button_alt-active');
-    this.cashButton.addEventListener('click', () => {
-      this.setPayment('cash');
-    });
-    
-    this.cardButton.addEventListener('click', () => {
-      this.setPayment('card');
-    });
-    
-    this.addressElement.addEventListener('input', () => {
-      this.events.emit('order:change', { field: 'address', value: this.addressElement.value });
-    });
+      this.formCashPayButtonElement.addEventListener('click', () => {
+        this.events.emit('payment:change', { payment: 'cash' });
+      })
 
-     this.nextButton.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (this.nextButton.disabled) return;
-      this.events.emit('order:next');
-    });
+      this.formAddressInputElement.addEventListener('input', () => {
+        this.events.emit('address:change', { address: this.formAddressInputElement.value });
+      })
 
-    this.events.on('form:errors', (errors: IValidationErrors) => {
-      this.validateForm(errors);
-    });
-  }
-
-  private setPayment(payment: TPayment): void {
-    this.cardButton.classList.remove('button_alt-active');
-    this.cashButton.classList.remove('button_alt-active');
-
-    if (payment === 'card') {
-      this.cardButton.classList.add('button_alt-active');
-    } else if (payment === 'cash') {
-      this.cashButton.classList.add('button_alt-active');
+      this.container.addEventListener('focusin', (event) => {
+        if (event.target instanceof HTMLInputElement)
+          this.events.emit('input:focus');
+      })
     }
-    
-    this.events.emit('order:change', { field: 'payment', value: payment });
-  }
 
-  set payment(value: TPayment) {
-    this.cardButton.classList.remove('button_alt-active');
-    this.cashButton.classList.remove('button_alt-active');
-
-    if (value === 'card') {
-      this.cardButton.classList.add('button_alt-active');
-    } else if (value === 'cash') {
-      this.cashButton.classList.add('button_alt-active');
+    clear(): void {
+      this.formAddressInputElement.value = '';
     }
-  }
 
-  set addressValue(value: string) {
-    this.addressElement.value = value;
-  }
-
-  validateForm(errors: IValidationErrors): void {
-    const orderErrors = [errors.address, errors.payment].filter(Boolean);
-    
-    this.isButtonValid = orderErrors.length === 0;
-    
-    if (orderErrors.length > 0) {
-      this.errors = orderErrors.join(', ');
-    } else {
-      this.errors = '';
+    checkValidation(errors: IValidationErrors): boolean {
+      this.clearErrors();
+      this.error = errors.payment || errors.address || '';
+      return !errors.payment && !errors.address;
     }
-  }
+
+    resetForm(): void {
+      super.resetForm();
+      this.clear();
+      this.formCardPayButtonElement.classList.remove('button_alt-active');
+      this.formCashPayButtonElement.classList.remove('button_alt-active')
+    }
+
+    togglePaymentButtonStatus(status: TPayment): void {
+      this.formCardPayButtonElement.classList.toggle('button_alt-active', status === 'card')
+      this.formCashPayButtonElement.classList.toggle('button_alt-active', status === 'cash')
+    }
 }
