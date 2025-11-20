@@ -34,37 +34,27 @@ export class Basket extends Component<IBasketData> {
       this.container
     );
 
-    // Устанавливаем начальное состояние (пустая корзина)
     this.items = [];
 
-    // Обработчик клика по кнопке заказа
     this.basketButtonOrderElement.addEventListener('click', () => {
       this.events.emit('basket:order');
     });
   }
 
-  /**
-   * Сеттер для управления списком товаров в корзине
-   * @param value - массив HTMLElement или null/undefined
-   */
   set items(value: HTMLElement[] | undefined | null) {
     if (!value || value.length === 0) {
-      // Корзина пуста
+     
       this.basketListElement.innerHTML = 'Корзина пуста';
       this.basketListElement.classList.add('basket__list-disabled');
       this.basketButtonOrderElement.disabled = true;
     } else {
-      // Есть товары в корзине
+      
       this.basketListElement.replaceChildren(...value);
       this.basketListElement.classList.remove('basket__list-disabled');
       this.basketButtonOrderElement.disabled = false;
     }
   }
 
-  /**
-   * Сеттер для отображения общей стоимости
-   * @param value - числовое значение суммы
-   */
   set total(value: number) {
     this.basketPriceElement.textContent = `${value} синапсов`;
   }
