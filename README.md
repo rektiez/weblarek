@@ -225,17 +225,23 @@ interface IBuyer {
 #### Order - Форма оформления заказа
 
 - Назначение: собирает данные пользователя для оформления заказа.
+- Реализация: класс `OrderForm`, наследуется от `Form`
 - Сеттеры:
   - `errors`: отображает ошибки валидации.
-  - `valid`: активирует/деактивирует кнопку отправки.
-- События: `order:submit`.
+  - `checkValidation(errors: IErrors): boolean`: отображает ошибки по полям payment, address.
+  - `togglePaymentButtonStatus(status: TPayment)`: — визуально выделяет выбранный способ оплаты.
+- События: `order:submit`
+           `payment:change, address:change — при изменении способа оплаты или адреса.`
+
 
 #### Contacts - Форма контактов
 
 - Назначение: собирает email и телефон пользователя.
-- Сеттеры:
+- Реализация: класс `ContactForms`, наследуется от `Form`.
+- Сеттеры / методы:
+  -`checkValidation(errors: IErrors): boolean` — отображает ошибки по полям email, phone.
   - `errors`, `valid`.
-- События: `contacts:submit`.
+- События: `contacts:submit` при отправке формы. `contacts:email`, `contacts:phone` — при вводе в соответствующие поля.
 
 #### Payment - Форма оплаты
 
@@ -252,3 +258,20 @@ interface IBuyer {
   - `id`: номер заказа.
 - События: `success:close`.
 
+#### Form — Базовый класс для форм
+
+Назначение: абстрактный базовый класс форм, реализующий общую логику валидации, отображения ошибок и управления состоянием кнопки отправки. Используется как родитель для `OrderForm` и `ContactForms`.
+
+Поля (protected):
+
+`formSubmitButtonElement: HTMLButtonElement` — кнопка отправки формы.
+`errorTextElement: HTMLElement | null` — элемент для отображения глобальной ошибки (если есть в шаблоне, например, data-error).
+
+Основные методы:
+
+`clearErrors()` — скрывает сообщение об ошибке (очищает errorTextElement).
+`setSubmitEnabled(state: boolean)` — контролирует доступность кнопки отправки (через setDisabled).
+`toggleErrorClass(hasError: boolean)` — переключает CSS-класс формы, сигнализирующий о наличии ошибок (например, form__error).
+
+Архитектурная роль:
+Формы — чистые View-компоненты, не хранящие и не изменяющие данные напрямую. Все изменения идут через события → модель Buyer → обновление формы по событию buyer:changed. Это гарантирует соблюдение принципа MVP и предотвращает дублирование состояния.
