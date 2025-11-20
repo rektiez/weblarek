@@ -32,7 +32,6 @@ export interface IOrderResponse {
   total: number;
 }
 
-// Используется в BuyerModel
 export interface IErrors {
   payment?: string;
   email?: string;
@@ -40,5 +39,4 @@ export interface IErrors {
   address?: string;
 }
 
-// Для форм
 export interface IValidationErrors extends IErrors {}

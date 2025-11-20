@@ -4,8 +4,6 @@ import { IEvents } from "../base/Events"
 import { IOrderResponse } from "../../types";
 
 
-
-
 export class OrderSuccess extends Component<IOrderResponse> {
   protected orderTitleElement: HTMLElement;
   protected orderButtonCloseElement: HTMLButtonElement;

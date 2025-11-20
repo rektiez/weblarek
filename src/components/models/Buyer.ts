@@ -1,12 +1,12 @@
-import { IBuyer, TPayment } from '../../types';
-import { EventEmitter } from '../base/Events';
+import { IBuyer, TPayment } from "../../types";
+import { EventEmitter } from "../base/Events";
 
 export class Buyer {
   private _payment: TPayment | null = null;
-  private _address: string = '';
-  private _email: string = '';
-  private _phone: string = '';
-  
+  private _address: string = "";
+  private _email: string = "";
+  private _phone: string = "";
+
   constructor(private events: EventEmitter) {}
 
   setBuyerNotis(data: IBuyer): void {
@@ -18,22 +18,22 @@ export class Buyer {
 
   setPayment(payment: TPayment): void {
     this._payment = payment;
-    this.events.emit('buyer:changed', { field: 'payment' });
+    this.events.emit("buyer:changed", { field: "payment" });
   }
 
   setAddress(address: string): void {
     this._address = address;
-    this.events.emit('buyer:changed', { field: 'address' });
+    this.events.emit("buyer:changed", { field: "address" });
   }
 
   setEmail(email: string): void {
     this._email = email;
-    this.events.emit('buyer:changed', { field: 'email' });
+    this.events.emit("buyer:changed", { field: "email" });
   }
 
   setPhone(phone: string): void {
     this._phone = phone;
-    this.events.emit('buyer:changed', { field: 'phone' });
+    this.events.emit("buyer:changed", { field: "phone" });
   }
 
   getBuyerNotis(): IBuyer {
@@ -47,18 +47,18 @@ export class Buyer {
 
   clearBuyerNotis(): void {
     this._payment = null;
-    this._address = '';
-    this._email = '';
-    this._phone = '';
+    this._address = "";
+    this._email = "";
+    this._phone = "";
   }
 
   validateBuyerNotis(): Record<string, string> {
-        const errors: Record<string, string> = {};
+    const errors: Record<string, string> = {};
 
-        if (!this._payment) errors.payment = 'Не выбран способ оплаты';
-        if (!this._email) errors.email = 'Укажите электронную почту';
-        if (!this._phone) errors.phone = 'Введите номер телефона';
-        if (!this._address) errors.address = 'Необходим адрес доставки';
-        return errors;
-    }
+    if (!this._payment) errors.payment = "Не выбран способ оплаты";
+    if (!this._email) errors.email = "Укажите электронную почту";
+    if (!this._phone) errors.phone = "Введите номер телефона";
+    if (!this._address) errors.address = "Необходим адрес доставки";
+    return errors;
+  }
 }

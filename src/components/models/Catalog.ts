@@ -1,5 +1,5 @@
-import { IProduct } from '../../types';
-import { EventEmitter } from '../base/Events';
+import { IProduct } from "../../types";
+import { EventEmitter } from "../base/Events";
 
 export class Catalog {
   private products: IProduct[] = [];
@@ -9,7 +9,7 @@ export class Catalog {
 
   setProducts(products: IProduct[]): void {
     this.products = products;
-    this.events.emit('catalog:changed');
+    this.events.emit("catalog:changed");
   }
 
   getProducts(): IProduct[] {
@@ -22,7 +22,7 @@ export class Catalog {
 
   setSelected(product: IProduct): void {
     this.selected = product;
-    this.events.emit('catalog:selected', product);
+    this.events.emit("catalog:selected", product);
   }
 
   getSelected(): IProduct | null {

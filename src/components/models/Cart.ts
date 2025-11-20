@@ -1,5 +1,5 @@
-import { IProduct } from '../../types';
-import { EventEmitter } from '../base/Events';
+import { IProduct } from "../../types";
+import { EventEmitter } from "../base/Events";
 
 export class Cart {
   private items: IProduct[] = [];

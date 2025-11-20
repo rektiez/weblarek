@@ -2,7 +2,6 @@ import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { EventEmitter } from "../base/Events";
 
-
 interface IBasketData {
   items: HTMLElement[];
   total: number;
@@ -18,39 +17,37 @@ export class Basket extends Component<IBasketData> {
     super(container);
 
     this.basketButtonOrderElement = ensureElement<HTMLButtonElement>(
-      '.basket__button',
+      ".basket__button",
       this.container
     );
     this.basketTitleElement = ensureElement<HTMLElement>(
-      '.modal__title',
+      ".modal__title",
       this.container
     );
     this.basketPriceElement = ensureElement<HTMLElement>(
-      '.basket__price',
+      ".basket__price",
       this.container
     );
     this.basketListElement = ensureElement<HTMLElement>(
-      '.basket__list',
+      ".basket__list",
       this.container
     );
 
     this.items = [];
 
-    this.basketButtonOrderElement.addEventListener('click', () => {
-      this.events.emit('basket:order');
+    this.basketButtonOrderElement.addEventListener("click", () => {
+      this.events.emit("basket:order");
     });
   }
 
   set items(value: HTMLElement[] | undefined | null) {
     if (!value || value.length === 0) {
-     
-      this.basketListElement.innerHTML = 'Корзина пуста';
-      this.basketListElement.classList.add('basket__list-disabled');
+      this.basketListElement.innerHTML = "Корзина пуста";
+      this.basketListElement.classList.add("basket__list-disabled");
       this.basketButtonOrderElement.disabled = true;
     } else {
-      
       this.basketListElement.replaceChildren(...value);
-      this.basketListElement.classList.remove('basket__list-disabled');
+      this.basketListElement.classList.remove("basket__list-disabled");
       this.basketButtonOrderElement.disabled = false;
     }
   }
