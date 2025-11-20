@@ -1,7 +1,8 @@
-import { IValidationErrors } from "../../../types";
-import { Component } from "../../base/Component" 
 import { ensureElement } from "../../../utils/utils" 
+import { Component } from "../../base/Component" 
 import { IEvents } from "../../base/Events"
+import { IValidationErrors } from "../../../types";
+
 
 export abstract class Form extends Component<HTMLElement> {
     protected formSubmitButtonElement: HTMLButtonElement;

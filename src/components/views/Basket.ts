@@ -1,6 +1,7 @@
 import { ensureElement } from "../../utils/utils";
-import { EventEmitter } from "../base/Events";
 import { Component } from "../base/Component";
+import { EventEmitter } from "../base/Events";
+
 
 interface IBasketData {
   items: HTMLElement[];

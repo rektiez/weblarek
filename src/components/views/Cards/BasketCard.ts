@@ -1,6 +1,6 @@
-import { IProduct } from "../../../types";
-import { Component } from "../../base/Component";
 import { ensureElement, cloneTemplate } from "../../../utils/utils"  
+import { Component } from "../../base/Component";
+import { IProduct } from "../../../types";
 import { IEvents } from "../../base/Events";
 
 export class BasketCard extends Component<IProduct & { index?: number }> {

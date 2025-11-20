@@ -1,7 +1,9 @@
-import { Component } from "../base/Component" 
-import { IOrderResponse } from "../../types";
-import { IEvents } from "../base/Events"
 import { ensureElement } from "../../utils/utils" 
+import { Component } from "../base/Component" 
+import { IEvents } from "../base/Events"
+import { IOrderResponse } from "../../types";
+
+
 
 
 export class OrderSuccess extends Component<IOrderResponse> {

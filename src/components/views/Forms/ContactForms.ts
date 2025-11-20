@@ -1,6 +1,6 @@
 import { ensureElement } from "../../../utils/utils" 
-import { IValidationErrors } from "../../../types";
 import { IEvents } from "../../base/Events"
+import { IValidationErrors } from "../../../types";
 import { Form } from "./Form";
 
 export class ContactForms extends Form {

@@ -1,5 +1,5 @@
-import { categoryMap } from "../../../utils/constants";
 import { Component } from "../../base/Component" 
+import { categoryMap } from "../../../utils/constants";
 import { IEvents } from "../../base/Events"
 import { CDN_URL } from "../../../utils/constants";
 import { IProduct } from "../../../types";
