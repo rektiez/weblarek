@@ -11,6 +11,7 @@ export class OrderForm extends Form {
 
   constructor(container: HTMLElement, events: IEvents) {
     super(container, events);
+
     this.formCardPayButtonElement = ensureElement<HTMLButtonElement>(
       '[name="card"]',
       this.container
@@ -49,10 +50,6 @@ export class OrderForm extends Form {
     });
   }
 
-  clear(): void {
-    this.formAddressInputElement.value = "";
-  }
-
   checkValidation(errors: IErrors): boolean {
     this.clearErrors();
     this.error = errors.payment || errors.address || "";
@@ -61,7 +58,6 @@ export class OrderForm extends Form {
 
   resetForm(): void {
     super.resetForm();
-    this.clear();
     this.formCardPayButtonElement.classList.remove("button_alt-active");
     this.formCashPayButtonElement.classList.remove("button_alt-active");
   }
@@ -75,5 +71,10 @@ export class OrderForm extends Form {
       "button_alt-active",
       status === "cash"
     );
+  }
+
+  updateFromModel(buyerData: { address: string; payment: TPayment }) {
+    this.formAddressInputElement.value = buyerData.address || '';
+    this.togglePaymentButtonStatus(buyerData.payment);
   }
 }

@@ -7,8 +7,9 @@ export class ContactForms extends Form {
   protected formEmailInputElement: HTMLInputElement;
   protected formTelephoneInputElement: HTMLInputElement;
 
-  constructor(protected container: HTMLElement, protected events: IEvents) {
+  constructor(container: HTMLElement, events: IEvents) {
     super(container, events);
+
     this.formEmailInputElement = ensureElement<HTMLInputElement>(
       'input[name="email"]',
       this.container
@@ -44,11 +45,10 @@ export class ContactForms extends Form {
 
   resetForm(): void {
     super.resetForm();
-    this.clear();
   }
 
-  clear(): void {
-    this.formEmailInputElement.value = "";
-    this.formTelephoneInputElement.value = "";
+  updateFromModel(buyerData: { email: string; phone: string }) {
+    this.formEmailInputElement.value = buyerData.email || '';
+    this.formTelephoneInputElement.value = buyerData.phone || '';
   }
 }

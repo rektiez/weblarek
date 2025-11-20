@@ -94,10 +94,12 @@ events.on("basket:open", () => {
 
 events.on("card:remove", (product: IProduct) => {
   cartModel.removeItem(product.id);
-   modal.close();
+  modal.close();
 });
 
 events.on("basket:order", () => {
+  const buyerData = buyer.getBuyerData();
+  orderForm.updateFromModel(buyerData);
   modal.open(orderForm.render());
 });
 
@@ -110,6 +112,8 @@ events.on("address:change", (data: { address: string }) => {
 });
 
 events.on("order:submit", () => {
+  const buyerData = buyer.getBuyerData();
+  contactsForm.updateFromModel(buyerData);
   modal.content = contactsForm.render();
 });
 
@@ -124,15 +128,17 @@ events.on("contacts:phone", (data: { phone: string }) => {
 events.on("buyer:changed", (data: { field: string }) => {
   const validation = buyer.validateBuyerNotis();
   const buyerData = buyer.getBuyerData();
+
   if (data.field === "payment" || data.field === "address") {
     const isValid = orderForm.checkValidation(validation);
     orderForm.setSubmitEnabled(isValid);
     orderForm.toggleErrorClass(!isValid);
-    orderForm.togglePaymentButtonStatus(buyerData.payment);
+    orderForm.updateFromModel(buyerData);
   } else if (data.field === "email" || data.field === "phone") {
     const isValid = contactsForm.checkValidation(validation);
     contactsForm.setSubmitEnabled(isValid);
     contactsForm.toggleErrorClass(!isValid);
+    contactsForm.updateFromModel(buyerData);
   }
 });
 
@@ -149,10 +155,10 @@ events.on("contacts:submit", () => {
       if (result) {
         cartModel.clear();
         buyer.clearBuyerNotis();
+        success.total = result.total;
         modal.content = success.render();
         orderForm.resetForm();
         contactsForm.resetForm();
-        success.total = result.total;
       }
     })
     .catch((error) => console.error("Ошибка оформления заказа:", error));
