@@ -1,7 +1,7 @@
 import './scss/styles.scss';
+import { cloneTemplate, ensureElement } from './utils/utils';
 import { API_URL } from './utils/constants';
 import { EventEmitter } from './components/base/Events';
-import { cloneTemplate, ensureElement } from './utils/utils';
 import { IOrderRequest, IProduct, TPayment } from './types';
 import { Cart } from './components/models/Cart';
 import { Buyer } from './components/models/Buyer';
