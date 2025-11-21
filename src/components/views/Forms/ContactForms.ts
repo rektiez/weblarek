@@ -9,7 +9,6 @@ export class ContactForms extends Form {
 
   constructor(container: HTMLElement, events: IEvents) {
     super(container, events);
-
     this.formEmailInputElement = ensureElement<HTMLInputElement>(
       'input[name="email"]',
       this.container
@@ -41,10 +40,6 @@ export class ContactForms extends Form {
     this.clearErrors();
     this.error = errors.email || errors.phone || "";
     return !errors.email && !errors.phone;
-  }
-
-  resetForm(): void {
-    super.resetForm();
   }
 
   updateFromModel(buyerData: { email: string; phone: string }) {

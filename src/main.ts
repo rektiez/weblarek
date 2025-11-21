@@ -125,21 +125,21 @@ events.on("contacts:phone", (data: { phone: string }) => {
   buyer.setPhone(data.phone);
 });
 
-events.on("buyer:changed", (data: { field: string }) => {
+// ✅ Исправлен: обновляем формы при ЛЮБОМ изменении, в т.ч. field: 'all'
+events.on("buyer:changed", () => {
   const validation = buyer.validateBuyerNotis();
   const buyerData = buyer.getBuyerData();
 
-  if (data.field === "payment" || data.field === "address") {
-    const isValid = orderForm.checkValidation(validation);
-    orderForm.setSubmitEnabled(isValid);
-    orderForm.toggleErrorClass(!isValid);
-    orderForm.updateFromModel(buyerData);
-  } else if (data.field === "email" || data.field === "phone") {
-    const isValid = contactsForm.checkValidation(validation);
-    contactsForm.setSubmitEnabled(isValid);
-    contactsForm.toggleErrorClass(!isValid);
-    contactsForm.updateFromModel(buyerData);
-  }
+  // Всегда обновляем обе формы
+  orderForm.checkValidation(validation);
+  orderForm.setSubmitEnabled(!validation.payment && !validation.address);
+  orderForm.toggleErrorClass(!!(validation.payment || validation.address));
+  orderForm.updateFromModel(buyerData);
+
+  contactsForm.checkValidation(validation);
+  contactsForm.setSubmitEnabled(!validation.email && !validation.phone);
+  contactsForm.toggleErrorClass(!!(validation.email || validation.phone));
+  contactsForm.updateFromModel(buyerData);
 });
 
 events.on("contacts:submit", () => {
@@ -154,11 +154,9 @@ events.on("contacts:submit", () => {
     .then((result) => {
       if (result) {
         cartModel.clear();
-        buyer.clearBuyerNotis();
+        buyer.clearBuyerNotis(); 
         success.total = result.total;
         modal.content = success.render();
-        orderForm.resetForm();
-        contactsForm.resetForm();
       }
     })
     .catch((error) => console.error("Ошибка оформления заказа:", error));

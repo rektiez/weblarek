@@ -11,7 +11,6 @@ export class OrderForm extends Form {
 
   constructor(container: HTMLElement, events: IEvents) {
     super(container, events);
-
     this.formCardPayButtonElement = ensureElement<HTMLButtonElement>(
       '[name="card"]',
       this.container
@@ -54,12 +53,6 @@ export class OrderForm extends Form {
     this.clearErrors();
     this.error = errors.payment || errors.address || "";
     return !errors.payment && !errors.address;
-  }
-
-  resetForm(): void {
-    super.resetForm();
-    this.formCardPayButtonElement.classList.remove("button_alt-active");
-    this.formCashPayButtonElement.classList.remove("button_alt-active");
   }
 
   togglePaymentButtonStatus(status: TPayment): void {
